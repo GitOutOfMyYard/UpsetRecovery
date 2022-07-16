@@ -1,13 +1,17 @@
-
-import pygame
-
-pygame.init()
-
-
-
 def pfd():
     import pygame
     pygame.init()
+    import os
+    import time as timer
+    recordtime = str(timer.ctime()).replace(':', '_')
+    dirname = str(username + recordtime)
+    try:
+        os.mkdir(dirname)
+    except Exception:
+        pass
+    finally:
+        os.chdir(str(os.getcwd())+'/'+dirname)
+
     pygame.display.init()
     pygame.joystick.init()
     import matplotlib.pyplot as plt
@@ -15,7 +19,6 @@ def pfd():
     import pandas
     import random
     import numpy as np
-    import time as timer
 
     # SETTINGS
     joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
@@ -59,16 +62,17 @@ def pfd():
     yrolllist = []
     ypitchlist = []
     expnum = 0
-    recordtime=str(timer.ctime()).replace(':','_')
 
     while a == True:
 
         for i in range(pygame.joystick.get_count()):
-            speedroll1=speedroll*0.75
-            speedroll = pygame.joystick.Joystick(i).get_axis(0)
-            if pygame.joystick.Joystick(i).get_axis(0) > -blindroll and pygame.joystick.Joystick(i).get_axis(
-                    0) < blindroll:
+
+            if pygame.joystick.Joystick(i).get_axis(0) > -blindroll and pygame.joystick.Joystick(i).get_axis(0) < blindroll:
                 speedroll = 0
+            else:
+                speedroll = pygame.joystick.Joystick(i).get_axis(0)
+
+            speedroll1 = speedroll * 0.75
             roll += speedroll1 / 17
             speedpitch = pygame.joystick.Joystick(i).get_axis(1)
 
@@ -91,7 +95,7 @@ def pfd():
             rolllist.append(roll*55)
             pitchlist.append(pitch/5)
         if len(ypitchlist) == shag:
-
+            expnum+=1
             def Tables(expnum):
                 ypitchseries = pandas.Series((ypitchlist))
                 yrollseries = pandas.Series((yrolllist))
@@ -99,11 +103,16 @@ def pfd():
                     'Pitch Amplitude': ypitchseries,
                     'Roll Amplitude': yrollseries
                 })
-                expnum += 1
+
+             #   expnum += 1
+
                 ytable.to_excel(str(recordtime)+'table ' + str(expnum) + '.xlsx')
+
             Tables(expnum)
-            def Inputplot():
+            def Inputplot(expnum):
+             #   expnum += 1
                 xplot = np.linspace(0.0, FPS * rounds, shag)
+
                 ypitchplot = ypitchlist
                 yrollplot = yrolllist
                 plt.figure(figsize=(8, 8))  # GRAFIKI START
@@ -122,17 +131,18 @@ def pfd():
                 plt.plot(xplot, yrollplot)
                 plt.grid()
                # plt.show()
-                plt.savefig(str(recordtime)+'Input_plot'+str(expnum+1)+'.pdf',format='pdf')
+                plt.savefig(str(recordtime)+'Input_plot'+str(expnum)+'.pdf',format='pdf')
                 plt.close()
-                pygame.time.delay(500)
+                pygame.time.delay(100)
                 roll = random.random() * random.randint(-1, 1)
                 pitch = random.randint(-50, +50)
                 # if roll in np.arange(-0.2,0.2) ==True or pitch in np.arange(-1.0,1.0)==True:
                 if (roll < 0.2 == True and roll > -0.2 == True) or (pitch < 30 == True and roll > -30 == True):
                     roll = random.random() * random.randint(-1, 1)
                     pitch = random.randint(-50, +50)
-            Inputplot()
-            def Attitudeplot():
+            Inputplot(expnum)
+            def Attitudeplot(expnum):
+              #  expnum += 1
                 xplot = np.linspace(0.0, FPS * rounds, shag)
 
                 rollplot=rolllist
@@ -152,11 +162,12 @@ def pfd():
                 plt.ylabel('Degrees', color='gray')
                 plt.plot(xplot, rollplot)
                 plt.grid()
-                plt.savefig(str(recordtime)+'Attitude_plot' + str(expnum + 1) + '.pdf', format='pdf')
+                plt.savefig(str(recordtime)+'Attitude_plot' + str(expnum) + '.pdf', format='pdf')
                 plt.close()
                 #plt.show()
 
-            Attitudeplot()
+
+            Attitudeplot(expnum)
 
 
 
@@ -181,70 +192,43 @@ def pfd():
 
         for event in pygame.event.get():
 
-            if pygame.joystick.get_count() > 0:
-
-                if event.type == pygame.KEYDOWN:
-                    # Other buttons
-                    if event.key == pygame.K_ESCAPE:
-                        pygame.quit()
-                    if pygame.key.get_pressed()[pygame.K_RALT] and pygame.key.get_pressed()[pygame.K_RETURN]:
-                        pygame.display.set_mode((W, H), pygame.FULLSCREEN)
-                        if pygame.key.get_pressed()[pygame.K_RALT] and pygame.key.get_pressed()[pygame.K_RETURN]:
-                            pygame.display.set_mode((W, H))
-                    if pygame.key.get_pressed()[pygame.K_LALT] and pygame.key.get_pressed()[pygame.K_RETURN]:
-                        pygame.display.set_mode((W, H), pygame.FULLSCREEN)
-                        if pygame.key.get_pressed()[pygame.K_LALT] and pygame.key.get_pressed()[pygame.K_RETURN]:
-                            pygame.display.set_mode((W, H))
 
 
-                    if pygame.key.get_pressed()[pygame.K_r]:
-                        pygame.time.delay(500)
-                        roll = random.random() * random.randint(-2, 2)
-                        pitch = random.randint(-200, +200)
-
-                        if (math.sin(roll) < 0.9  and math.sin(roll) > -0.9) or (pitch < 50 == True and roll > -50 == True):
-                            while (math.cos(roll) < 0.9 and math.cos(roll) > -0.9) or (
-                                    pitch < 50 and roll > -50):
-                                roll = random.random() * random.randint(-2, 2)
-                                pitch = random.randint(-200, +200)
-
-
-            elif event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN:
                 # Other buttons
-                if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
+
                 if pygame.key.get_pressed()[pygame.K_RALT] and pygame.key.get_pressed()[pygame.K_RETURN]:
                     pygame.display.set_mode((W, H), pygame.FULLSCREEN)
                     if pygame.key.get_pressed()[pygame.K_RALT] and pygame.key.get_pressed()[pygame.K_RETURN]:
                         pygame.display.set_mode((W, H))
+                if pygame.key.get_pressed()[pygame.K_LALT] and pygame.key.get_pressed()[pygame.K_RETURN]:
+                    pygame.display.set_mode((W, H), pygame.FULLSCREEN)
+                    if pygame.key.get_pressed()[pygame.K_LALT] and pygame.key.get_pressed()[pygame.K_RETURN]:
+                        pygame.display.set_mode((W, H))
+                #Упарвление РУС с клавы(данные в таблицу не записыаются)
+                pygame.key.set_repeat(100, 50)
+                if pygame.key.get_pressed()[pygame.K_LEFT]:
+                    roll -= speedroll
+                if pygame.key.get_pressed()[pygame.K_RIGHT]:
+                    roll += speedroll
+                if pygame.key.get_pressed()[pygame.K_UP]:
+                    pitch -= speedpitch * 10
+                if pygame.key.get_pressed()[pygame.K_DOWN]:
+                    pitch += speedpitch * 10
+                if pygame.key.get_pressed()[pygame.K_r]:
+                    pygame.time.delay(500)
+                    roll = random.random() * random.randint(-2, 2)
+                    pitch = random.randint(-200, +200)
 
-                if event.key == pygame.K_r:
-                    pygame.time.delay(0)
-                    roll = random.random() * random.randint(-1, 1)
-                    pitch = random.randint(-50, +50)
-                    ypitchlist = []
-                    if (roll < 0.2 == True and roll > -0.2 == True) or (pitch < 30 == True and roll > -30 == True):
-                        roll = random.random() * random.randint(-1, 1)
-                        pitch = random.randint(-50, +50)
+                    if (math.sin(roll) < 0.9  and math.sin(roll) > -0.9) or (pitch < 50 == True and roll > -50 == True):
+                        while (math.cos(roll) < 0.9 and math.cos(roll) > -0.9) or (
+                                pitch < 50 and roll > -50):
+                            roll = random.random() * random.randint(-2, 2)
+                            pitch = random.randint(-200, +200)
 
-                if len(ypitchlist) == FPS * rounds - 1:
-                    print(ypitchlist)
-                    xplot = np.linspace(0, FPS * rounds, FPS * rounds)
-                    yplot = ypitchlist
-                    plt.plot(xplot, yplot)
-                    plt.show()
 
-            pygame.key.set_repeat(100, 50)
 
-                # Управление РУС
-            if pygame.key.get_pressed()[pygame.K_LEFT]:
-                roll -= speedroll
-            if pygame.key.get_pressed()[pygame.K_RIGHT]:
-                roll += speedroll
-            if pygame.key.get_pressed()[pygame.K_UP]:
-                pitch -= speedpitch*10
-            if pygame.key.get_pressed()[pygame.K_DOWN]:
-                pitch += speedpitch*10
+
 
         # Отрисовка
 
@@ -303,33 +287,64 @@ def pfd():
 
         clock.tick(FPS)
 
-        if event.type == pygame.QUIT:
+        if event.type == pygame.KEYDOWN:
+            # Other buttons
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                a = False
+        elif event.type == pygame.QUIT:
             pygame.quit()
             a = False
 
-from tkinter import *
 
 
 
 def main():
-    mainwindow = Tk()
-    mainwindow.geometry("600x200+300+300")
+    import tkinter
+    mainwindow = tkinter.Tk()
+    mainwindow.geometry("600x300+300+300")
     mainwindow.title('Complex attitude recovery')
 
-    Label(mainwindow,text='На данный момент в программе доступен только тренировочный режим,\n'
+    tkinter.Label(mainwindow,text='На данный момент в программе доступен только тренировочный режим,\n'
                           ' в нем у вас будет 5 секунд на то чтобы вывести "самолёт" из сложного пространственного положения,\n'
                           ' после чего программа вновь ввёдет СПП.\n'
                           'Данные о каждой проведенной попытке сохраняются в папке с программой ').pack()
 
+    tkinter.Label(mainwindow,text='Введите Имя').pack()
+    inputfield1 = tkinter.Entry(mainwindow)
+    inputfield1.pack()
+
+    tkinter.Label(mainwindow, text='Введите Фамилию').pack()
+    inputfield2 = tkinter.Entry(mainwindow, )
+    inputfield2.pack()
+
+    tkinter.Label(mainwindow, text='Введите Отчество').pack()
+    inputfield3 = tkinter.Entry(mainwindow, )
+    inputfield3.pack()
 
 
-    Startbutton = Button(mainwindow, text='Start training!',command=pfd)
+    Startbutton = tkinter.Button(mainwindow, text='Start training!',command=pfd)
+
+    def getinputvalues(*args):
+        input1stname = inputfield1.get()
+        inputlastname = inputfield2.get()
+        inputmdlname = inputfield3.get()
+        global username
+        username = str('{}_{}_{}').format(inputmdlname , inputlastname , input1stname)
+        #for i in args:
+
+
+        if  input1stname == '' or inputlastname == '' or inputmdlname == '':
+            Startbutton['state'] = 'disabled'
+        else:
+            Startbutton['state'] = 'normal'
+        mainwindow.after(100, getinputvalues)
+
+    getinputvalues()
+
     Startbutton.pack()
+
     mainwindow.mainloop()
 
 
 main()
-
-
-
-
