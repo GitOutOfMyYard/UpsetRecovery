@@ -1,4 +1,3 @@
-<<<<<<< HEAD:upset_recovery.py
 def pfd():
     import pygame
     pygame.init()
@@ -682,4 +681,4 @@ def main():
 
 
 main()
->>>>>>> fc83f5b314f5662d46bc927333b5923bd66c0c3c:Вывод из СПП.py
+
