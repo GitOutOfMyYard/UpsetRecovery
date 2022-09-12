@@ -16,7 +16,7 @@ def pfd():
     pygame.joystick.init()
     import matplotlib.pyplot as plt
     import math
-    import pandas
+    import table_creator
     import random
     import numpy as np
 
@@ -94,23 +94,14 @@ def pfd():
             ypitchlist.append(speedpitch)
             rolllist.append(roll*55)
             pitchlist.append(pitch/5)
+
         if len(ypitchlist) == shag:
-            expnum+=1
-            def Tables(expnum):
-                ypitchseries = pandas.Series((ypitchlist))
-                yrollseries = pandas.Series((yrolllist))
-                ytable = pandas.DataFrame({
-                    'Pitch Amplitude': ypitchseries,
-                    'Roll Amplitude': yrollseries
-                })
+            expnum += 1
+            table_creator.tables_to_exc(ypitchlist, f'Pitch_table{expnum}')
+            table_creator.tables_to_exc(yrolllist, f'Roll_table{expnum}')
 
-             #   expnum += 1
-
-                ytable.to_excel(str(recordtime)+'table ' + str(expnum) + '.xlsx')
-
-            Tables(expnum)
             def Inputplot(expnum):
-             #   expnum += 1
+
                 xplot = np.linspace(0.0, FPS * rounds, shag)
 
                 ypitchplot = ypitchlist
