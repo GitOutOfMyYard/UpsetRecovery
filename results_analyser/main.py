@@ -5,7 +5,7 @@ from collections import namedtuple
 import pandas
 import matplotlib
 
-from data_loader.src.input_assessment_configs import PitchCorrectness, \
+from results_analyser.src.input_assessment_configs import PitchCorrectness, \
     RollCorrectnessRelations, EventValuesConformity, RecoveryEventParameters
 
 matplotlib.use('TkAgg')

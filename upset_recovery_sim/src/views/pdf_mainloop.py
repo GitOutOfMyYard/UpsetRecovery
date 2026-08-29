@@ -5,8 +5,8 @@ import random
 import os
 import math
 from typing import Tuple
-from upset_recovery.src.config import GameCnst
-from upset_recovery.src.presenters.view_interfaces import \
+from upset_recovery_sim.src.config import GameCnst
+from upset_recovery_sim.src.presenters.view_interfaces import \
     IUpsetRecoveryLoopView
 
 ASSETS_DIR = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))) , 'assets')

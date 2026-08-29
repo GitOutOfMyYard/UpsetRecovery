@@ -4,7 +4,7 @@ from typing import Optional, Iterable
 
 from PyQt5.QtWidgets import QApplication
 
-from upset_recovery.src.main import start_app
+from upset_recovery_sim.src.main import start_app
 
 
 def launch_app(app_args: Iterable[str] = ()) -> None:
