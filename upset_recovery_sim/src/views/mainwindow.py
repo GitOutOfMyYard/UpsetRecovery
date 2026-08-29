@@ -4,9 +4,9 @@ from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QPushButton, QWidget, \
     QLineEdit
 from PyQt5.QtCore import pyqtSignal
 
-from upset_recovery.src.config import WINDOW_SIZE
-from upset_recovery.src.dtos import LoginDataDto
-from upset_recovery.src.presenters.view_interfaces import IWelcomingView
+from upset_recovery_sim.src.config import WINDOW_SIZE
+from upset_recovery_sim.src.dtos import LoginDataDto
+from upset_recovery_sim.src.presenters.view_interfaces import IWelcomingView
 
 
 class LoginField(QLineEdit):

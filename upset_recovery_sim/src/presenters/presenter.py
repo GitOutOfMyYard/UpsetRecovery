@@ -3,9 +3,9 @@ import os
 import json
 from typing import Optional
 
-from upset_recovery.src.config import GameCnst
-from upset_recovery.src.dtos import LoginDataDto
-from upset_recovery.src.presenters.view_interfaces import IWelcomingView, \
+from upset_recovery_sim.src.config import GameCnst
+from upset_recovery_sim.src.dtos import LoginDataDto
+from upset_recovery_sim.src.presenters.view_interfaces import IWelcomingView, \
     IUpsetRecoveryLoopView
 
 

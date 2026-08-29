@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Callable, Optional
 
-from upset_recovery.src.dtos import LoginDataDto
+from upset_recovery_sim.src.dtos import LoginDataDto
 
 
 class IWelcomingView(ABC):

@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QApplication
 
-from upset_recovery.src.presenters.presenter import Presenter
-from upset_recovery.src.views.pdf_mainloop import UpsetRecoveryWindow
-from upset_recovery.src.views.mainwindow import PFDMainWindow, WelcomingView
+from upset_recovery_sim.src.presenters.presenter import Presenter
+from upset_recovery_sim.src.views.pdf_mainloop import UpsetRecoveryWindow
+from upset_recovery_sim.src.views.mainwindow import PFDMainWindow, WelcomingView
 
 
 
