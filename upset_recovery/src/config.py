@@ -2,6 +2,7 @@ from enum import Enum
 from dotenv import dotenv_values
 from os import path, sep
 from json import loads
+from typing import List, Tuple
 
 WINDOW_SIZE = (400, 600)
 SCREEN_CENTER = (WINDOW_SIZE[0] / 2, WINDOW_SIZE[1] / 2)
@@ -56,22 +57,22 @@ class DefaultGameCnst:
     INTERVAL = 3
 
 
-configuration_path = f'{path.dirname(path.dirname(path.abspath(__file__)))}' \
-                     f'{sep}configuration.txt'
-configuration = dotenv_values(configuration_path)
+APP_ROOT = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
+USER_CONFIGS_PATH = path.join(APP_ROOT, 'configuration.txt')
+CONFIG = dotenv_values(USER_CONFIGS_PATH)
 
 
-def load_upset_positions(config):
+def load_upset_positions(config) -> List[Tuple[float, float]]:
     return list(map(tuple, loads(config['UPSET_POSITIONS'])))
 
 
 class GameCnst:
-    WINDOW_WIDTH = int(configuration['WINDOW_WIDTH'])
-    WINDOW_HEIGHT = int(configuration['WINDOW_HEIGHT'])
+    WINDOW_WIDTH = int(CONFIG['WINDOW_WIDTH'])
+    WINDOW_HEIGHT = int(CONFIG['WINDOW_HEIGHT'])
 
     WINDOW_SIZE = (
-        int(configuration['WINDOW_WIDTH']),
-        int(configuration['WINDOW_HEIGHT'])
+        int(CONFIG['WINDOW_WIDTH']),
+        int(CONFIG['WINDOW_HEIGHT'])
     )
     FPS = 60
 
@@ -83,7 +84,7 @@ class GameCnst:
     SKYBLUE = (0, 204, 255)
     GROUNDBROWN = (153, 102, 51)
 
-    TIME_TO_RECOVER = int(configuration['TIME_TO_RECOVER'])
+    TIME_TO_RECOVER = int(CONFIG['TIME_TO_RECOVER'])
 
     ROLL_POINTER_HEIGHT = 16
     ROLL_POINTER_WIDTH = 6
@@ -97,16 +98,16 @@ class GameCnst:
     CROSSHAIR_CLEARANCE = 8
     CROSSHAIR_THICKNESS = 3
 
-    UPSET_POSITIONS = load_upset_positions(configuration)
+    UPSET_POSITIONS = load_upset_positions(CONFIG)
 
     CYCLE_NUMBER = len(UPSET_POSITIONS)
-    EXPERIMENT_DURATION = int(configuration['EXPERIMENT_DURATION'])
-    INTERVAL = int(configuration['INTERVAL'])
+    EXPERIMENT_DURATION = int(CONFIG['EXPERIMENT_DURATION'])
+    INTERVAL = int(CONFIG['INTERVAL'])
     SHUTTER_HEIGHT = 100
 
 class Turbulence(Enum):
-    SEVERANCE = float(configuration['TURBULENCE_SEVERANCE'])
-    FLUCTUATIONS = float(configuration['TURBULENCE_FLUCTUATIONS'])
+    SEVERANCE = float(CONFIG['TURBULENCE_SEVERANCE'])
+    FLUCTUATIONS = float(CONFIG['TURBULENCE_FLUCTUATIONS'])
 
 
 class Controller(Enum):

@@ -1,11 +1,15 @@
+from typing import Optional
+
 import pygame
 import random
 import os
-import time
 import math
 from typing import Tuple
-from .config import GameCnst
+from upset_recovery.src.config import GameCnst
+from upset_recovery.src.presenters.view_interfaces import \
+    IUpsetRecoveryLoopView
 
+ASSETS_DIR = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))) , 'assets')
 
 
 class RandomAttitude:
@@ -13,7 +17,6 @@ class RandomAttitude:
         self.roll = self.get_random(35, 55)
         self.pitch = self.get_random(20, 50)
 
-    #@staticmethod
     def get_random(self, minimum, maximum):
         return random.randrange(minimum, maximum, 1) * random.choice([-1, 1])
 
@@ -21,23 +24,24 @@ class RandomAttitude:
         return self
 
     def __next__(self):
-#        yield self.roll, self.pitch
         self.roll = self.get_random(45, 75)
         self.pitch = self.get_random(30, 70)
         return self.roll, self.pitch
 
 
-class UpsetRecoveryWindow:
-    # def __new__(cls, test=True, presenter=None):
-    #     if not hasattr(cls, 'instance'):
-    #         cls.instance = super(UpsetRecoveryWindow, cls).__new__(cls)
-    #     return cls.instance
+class UpsetRecoveryWindow(IUpsetRecoveryLoopView):
 
-    def __init__(self, test=True, presenter=None):
+    def __init__(
+            self,
+            test: bool = True,
+            presenter = None,  # type: Optional[Presenter]
+    ):
         self.presenter = presenter
         if test:
             self.experiment_number = GameCnst.CYCLE_NUMBER
-            self.upset_positions = (attitude for attitude in GameCnst.UPSET_POSITIONS)
+            self.upset_positions = (
+                attitude for attitude in GameCnst.UPSET_POSITIONS
+            )
         else:
             self.experiment_number = 256
             self.upset_positions = RandomAttitude()
@@ -52,8 +56,8 @@ class UpsetRecoveryWindow:
         self.tick_counter = 0
         self.experiment_duration = GameCnst.FPS * GameCnst.EXPERIMENT_DURATION
         pygame.init()
-     #   pygame.mixer.init()  # для звука
-        self.screen = pygame.display.set_mode(GameCnst.WINDOW_SIZE, pygame.RESIZABLE)
+     #   pygame.mixer.init()  # Sound
+        self.screen = pygame.display.set_mode(size=GameCnst.WINDOW_SIZE, flags=pygame.RESIZABLE)
         pygame.display.set_caption("Upset Recovery")
         self.game_clock = pygame.time.Clock()
         self.cycle_counter = 1
@@ -92,11 +96,10 @@ class UpsetRecoveryWindow:
         upset_positions = next(self.upset_positions)
         self.roll = upset_positions[0]
         self.pitch = upset_positions[1]
-        self.pfd_image = pygame.image.load(os.path.abspath(os.path.dirname(__file__)) + os.sep + 'pfd.png').convert()
+        image_file_path = os.path.join(ASSETS_DIR, 'pfd.png')
+        self.pfd_image = pygame.image.load(image_file_path).convert()
         self.pfd_rect = self.pfd_image.get_rect(bottomright=(self.image_width, self.image_height))
         self.number_font = self.initialize_font(size=100)
-
-
 
         # indicators
         flat_roll_pointer_tip_y = self.background_center[1] - GameCnst.ROLL_POINTER_TIP_ELEVATION
@@ -323,9 +326,6 @@ class UpsetRecoveryWindow:
             self.pitch_list = []
             self.joystick_pitch_list = []
 
-            # upset_positions = next(self.upset_positions)
-            # self.roll, self.pitch = upset_positions[0], upset_positions[1]
-
             self.roll, self.pitch = next(self.upset_positions)
             self.tick_counter = 0
             self.cycle_counter += 1
@@ -415,21 +415,6 @@ class UpsetRecoveryWindow:
                           GameCnst.CROSSHAIR_THICKNESS)
         screen.blit(self.indicator_surface, (0, 0))
         screen.blit(rotated_roll_indicator, indicator_rotated_rect)
-
-
-
-def parse_constant(key: str, value) -> str:
-    return f'{key}={value}'
-
-
-def write_to_configuration(config_constancts: dict) -> None:
-    home_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    configuration_path = f'{home_dir}{os.sep}configuration.txt'
-    with open(configuration_path) as config:
-        total_constants = '\n'.join(
-            [parse_constant(*item) for item in config_constancts.items()]
-        )
-        config.write(total_constants)
 
 
 if __name__ == '__main__':

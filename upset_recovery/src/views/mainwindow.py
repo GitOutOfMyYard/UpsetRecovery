@@ -1,20 +1,19 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QPushButton, QWidget, QTextEdit, QLineEdit
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QPalette, QColor
+from typing import Optional, Callable
 
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QPushButton, QWidget, \
+    QLineEdit
+from PyQt5.QtCore import pyqtSignal
 
-import sys
-from .config import WINDOW_SIZE
+from upset_recovery.src.config import WINDOW_SIZE
+from upset_recovery.src.dtos import LoginDataDto
+from upset_recovery.src.presenters.view_interfaces import IWelcomingView
 
 
 class LoginField(QLineEdit):
     def __init__(self, text):
         super().__init__(text)
-        # self.setTextColor(Qt.gray)
         self.setPlaceholderText(text)
-        # self.setText(text)
         self.setMaximumSize(400, 32)
-        # self.not_edited = True
         self.not_edited = False
 
     def mousePressEvent(self, e):
@@ -37,8 +36,6 @@ class LoginField(QLineEdit):
             background-color: rgb(200, 140, 140)
             """
         )
-
-
 
 
 
@@ -77,19 +74,21 @@ class LoginWindow(QWidget):
         self.close()
         return False
 
-    def get_login_data(self):
+    def get_login_data(self) -> Optional[LoginDataDto]:
+        result = None
         if self.check_fields():
-            self.first_name = self.first_name_field.text()
-            self.middle_name = self.middle_name_field.text()
-            self.last_name = self.last_name_field.text()
-            self.group = self.group_field.text()
+            first_name = self.first_name_field.text()
+            middle_name = self.middle_name_field.text()
+            last_name = self.last_name_field.text()
+            group = self.group_field.text()
             self.logging = False
             for field in (self.group_field, self.last_name_field, self.middle_name_field, self.first_name_field):
                 field.clear()
             self.close()
-            return self.group, self.last_name, self.first_name, self.middle_name
-        else:
-            return None
+            result = LoginDataDto(group, last_name, first_name, middle_name)
+            return result
+
+        return result
 
     def okay(self):
         if self.check_fields():
@@ -131,12 +130,47 @@ class WelcomingWidget(QWidget):
             self.log_window = LoginWindow()
         self.log_window.show()
 
+    #
+    # def set_prepare_test_callback(self, callback: Callable[[], None]):
+    #     self.startTestBtnPressed.connect(callback)
+    #
+    # def set_start_test_callback(self, callback: Callable[[], None]):
+    #     self.log_window.startBtnPressed.connect(callback)
+    #
+    # def set_start_train_callback(self, callback: Callable[[], None]):
+    #     self.startTestBtnPressed.connect(callback)
+
+
+class WelcomingView(IWelcomingView):
+
+    def __init__(self):
+        self._widget = WelcomingWidget()
+
+    def login_user(self):
+        return self._widget.login_user()
+
+    def set_prepare_test_callback(self, callback: Callable[[], None]) -> None:
+        self._widget.startTestBtnPressed.connect(callback)
+
+    def set_start_test_callback(self, callback: Callable[[], None]) -> None:
+        self._widget.log_window.startBtnPressed.connect(callback)
+
+
+    def set_start_train_callback(self, callback: Callable[[], None]) -> None:
+        self._widget.startTrainBtnPressed.connect(callback)
+
+    def get_login_data(self) -> Optional[LoginDataDto]:
+        return self._widget.log_window.get_login_data()
+
+    def get_widget(self) -> QWidget:
+        return self._widget
+
 
 class PFDMainWindow(QMainWindow):
 
-    def __init__(self, central_widget):
+    def __init__(self, welcome_view: WelcomingView) -> None:
         super().__init__()
         minimum_width, minimum_height = WINDOW_SIZE
         self.setMinimumSize(minimum_width, minimum_height)
         self.setWindowTitle('Upset Recovery')
-        self.setCentralWidget(central_widget)
+        self.setCentralWidget(welcome_view.get_widget())
